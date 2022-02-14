@@ -1,0 +1,35 @@
+#htaccess_whitelist
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+ErrorDocument 404 https://XXXX.XXX/
+ErrorDocument 403 https://XXXX.XXX/
+</IfModule>
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301,NE]
+Header always set Content-Security-Policy "upgrade-insecure-requests;"
+Options -Indexes
+Header set X-Content-Type-Options nosniff
+ServerSignature Off
+RewriteCond %{REQUEST_URI} (admin-ajax\.php) [NC]
+RewriteRule . - [S=2]
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{REQUEST_URI} ^(.*)?wp-login\.php(.*)$ [OR]
+RewriteCond %{REQUEST_URI} ^(.*)?wp-admin$ [OR]
+RewriteCond %{REQUEST_URI} ^(.*)?wp-content$ [OR]
+RewriteCond %{REQUEST_URI} ^(.*)?wp-includes
+RewriteCond %{REMOTE_ADDR} !^X\.X\.X\.X$
+RewriteRule ^(.*)$ - [R=404,L]
+</IfModule>
+
+—------------------------------
+#htaccess_disablephp
+DirectoryIndex index.html
+php_flag engine off
